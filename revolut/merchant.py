@@ -130,8 +130,10 @@ class MerchantClient(base.BaseClient):
         if currency:
             reqdata["currency"] = currency
         try:
-            data = self._patch(path=f"orders/{order_id}", data=reqdata)
-            return Order(client=self, **data)
+            order = self._get(f"orders/{order_id}")
+            if order.state != "COMPLETED":
+                data = self._patch(path=f"orders/{order_id}", data=reqdata)
+                return Order(client=self, **data)
         except Exception:
             return None
 
